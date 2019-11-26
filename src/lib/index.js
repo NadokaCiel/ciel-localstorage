@@ -8,6 +8,9 @@ export function setLocalStorage(key, value, expired) {
   if (!value && value !== 0) {
     return '';
   }
+  if (!key && key !== 0) {
+    return '';
+  }
   window.localStorage.setItem(sha1(key), Base64.stringify(JSON.stringify(value)));
   if (expired && Number.isInteger(expired)) {
     window.localStorage.setItem(sha1(`${key}__expires__`), Base64.stringify(Date.now() + 1000 * expired));
@@ -16,18 +19,29 @@ export function setLocalStorage(key, value, expired) {
 }
 
 export function getLocalStorage(key) {
-  const expired = Base64.parse(window.localStorage.getItem(sha1(`${key}__expires__`)));
+  const time = window.localStorage.getItem(sha1(`${key}__expires__`));
+  if (!time) {
+    return '';
+  }
+  const expired = Base64.parse(time);
   const now = Date.now();
 
   if (expired && now >= parseInt(expired, 10)) {
     removeLocalStorage(sha1(key));
     return '';
   }
-  const value = Base64.parse(window.localStorage.getItem(sha1(key)));
+  const data = window.localStorage.getItem(sha1(key));
+  if (!data) {
+    return '';
+  }
+  const value = Base64.parse(data);
   return value ? JSON.parse(value) : null;
 }
 
 export function removeLocalStorage(key) {
+  if (!key && key !== 0) {
+    return '';
+  }
   window.localStorage.removeItem(sha1(key));
   window.localStorage.removeItem(sha1(`${key}__expires__`));
 }
