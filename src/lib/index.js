@@ -25,16 +25,16 @@ export function setLocalStorage(key, value, expired) {
 
 export function getLocalStorage(key) {
   const time = window.localStorage.getItem(sha1(`${key}__expires__`));
-  if (!time) {
-    return '';
-  }
-  const expired = Utf8.stringify(Base64.parse(time));
-  const now = Date.now();
+  if (time) {
+    const expired = Utf8.stringify(Base64.parse(time));
+    const now = Date.now();
 
-  if (expired && now >= parseInt(expired, 10)) {
-    removeLocalStorage(sha1(key));
-    return '';
+    if (expired && now >= parseInt(expired, 10)) {
+      removeLocalStorage(sha1(key));
+      return '';
+    }
   }
+  
   const data = window.localStorage.getItem(sha1(key));
   if (!data) {
     return '';
