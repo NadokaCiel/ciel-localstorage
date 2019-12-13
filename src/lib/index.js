@@ -19,6 +19,8 @@ export function setLocalStorage(key, value, expired) {
   window.localStorage.setItem(sha1(key), Base64.stringify(Utf8.parse(JSON.stringify(value + ''))));
   if (expired && Number.isInteger(expired)) {
     window.localStorage.setItem(sha1(`${key}__expires__`), Base64.stringify(Utf8.parse(Date.now() + 1000 * expired)));
+  } else {
+    window.localStorage.removeItem(sha1(`${key}__expires__`));
   }
   return value;
 }
